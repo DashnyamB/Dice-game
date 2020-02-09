@@ -3,11 +3,16 @@ var activePlayer;
 var scores = [];
 var roundScore;
 
+//Тоглоом дууссан эсэхийг хадгалах төлөвийн хувьсагч
+var isNewGame;
+
 var diceDom = document.querySelector(".dice");
 //Тоглоомыг эхлүүлнэ
 initGame();
 // Тоглоом эхлэхэд бэлтгэх
 function initGame() {
+  //Тоглоом эхлэлээ гэдэг төлөвт оруулна
+  isNewGame = true;
   // Тоглогчийн ээлжийг хадгалах хувьсагч, нэгдүгээр тоглогчийг 0, хоёрдугаар тоглогчийг 1 гэж тэмдэглэе
 
   activePlayer = 0;
@@ -45,44 +50,52 @@ function initGame() {
 
 // Шоог шидэх эвент листенэр
 document.querySelector(".btn-roll").addEventListener("click", function() {
-  // 1 - 6 хүртэл санатсаргүй тоог гаргана.
-  var diceNumber = Math.floor(Math.random() * 6) + 1;
-  // Нуусан шоог гаргаж ирнэ.
-  diceDom.style.display = "block";
-  // Буусан шооны тоонд харгалзах зургийг гаргаж ирнэ.
-  diceDom.src = "dice-" + diceNumber + ".png";
-  //Буусан тоо 1 -с ялгаатай бол идэвхтэй тоглогчийн ээлжийн оноог нэмэгдүүлнэ.
-  if (diceNumber !== 1) {
-    //1 - с ялгаатай тоо буулаа. Буусан тоог тоглогчид нэмж өгнө.
-    roundScore = roundScore + diceNumber;
-    document.getElementById("current-" + activePlayer).textContent = roundScore;
-  } else {
-    // 1 буусан тул тоглогчийн ээлжийг энд солино.
-    switchToNextPlayer();
+  if (isNewGame === true) {
+    // 1 - 6 хүртэл санатсаргүй тоог гаргана.
+    var diceNumber = Math.floor(Math.random() * 6) + 1;
+    // Нуусан шоог гаргаж ирнэ.
+    diceDom.style.display = "block";
+    // Буусан шооны тоонд харгалзах зургийг гаргаж ирнэ.
+    diceDom.src = "dice-" + diceNumber + ".png";
+    //Буусан тоо 1 -с ялгаатай бол идэвхтэй тоглогчийн ээлжийн оноог нэмэгдүүлнэ.
+    if (diceNumber !== 1) {
+      //1 - с ялгаатай тоо буулаа. Буусан тоог тоглогчид нэмж өгнө.
+      roundScore = roundScore + diceNumber;
+      document.getElementById(
+        "current-" + activePlayer
+      ).textContent = roundScore;
+    } else {
+      // 1 буусан тул тоглогчийн ээлжийг энд солино.
+      switchToNextPlayer();
+    }
   }
 });
-// Hold товчны эвент листенэр
 
+// Hold товчны эвент листенэр
 document.querySelector(".btn-hold").addEventListener("click", function() {
-  // ээлжинд уг тоглогчийн цуглуулсан ээлжны оныг глобаль оноон дээр нь нэмж өгнө.
-  scores[activePlayer] = scores[activePlayer] + roundScore;
-  //Дэлгэц дээр оноог нь өөрчилнө.
-  document.getElementById("score-" + activePlayer).textContent =
-    scores[activePlayer];
-  //Уг тоглогч хожсон эсэхийг шалгах
-  if (scores[activePlayer] >= 10) {
-    //Ялагч гэсэн техтийг нэрнийх нь нь оронд залгана.
-    document.getElementById("name-" + activePlayer).textContent = "Winner!!!";
-    document
-      .querySelector(".player-" + activePlayer + "-panel")
-      .classList.add("winner");
-    document
-      .querySelector(".player-" + activePlayer + "-panel")
-      .classList.remove("active");
-  } else {
-    //Ээлжийн оноог нь 0 болгоно.
-    //Тоглогчийн ээлжийг солино.
-    switchToNextPlayer();
+  if (isNewGame) {
+    // ээлжинд уг тоглогчийн цуглуулсан ээлжны оныг глобаль оноон дээр нь нэмж өгнө.
+    scores[activePlayer] = scores[activePlayer] + roundScore;
+    //Дэлгэц дээр оноог нь өөрчилнө.
+    document.getElementById("score-" + activePlayer).textContent =
+      scores[activePlayer];
+    //Уг тоглогч хожсон эсэхийг шалгах
+    if (scores[activePlayer] >= 10) {
+      //Тоглоомыг дууссан төлөвт оруулна
+      isNewGame = false;
+      //Ялагч гэсэн техтийг нэрнийх нь нь оронд залгана.
+      document.getElementById("name-" + activePlayer).textContent = "Winner!!!";
+      document
+        .querySelector(".player-" + activePlayer + "-panel")
+        .classList.add("winner");
+      document
+        .querySelector(".player-" + activePlayer + "-panel")
+        .classList.remove("active");
+    } else {
+      //Ээлжийн оноог нь 0 болгоно.
+      //Тоглогчийн ээлжийг солино.
+      switchToNextPlayer();
+    }
   }
 });
 
